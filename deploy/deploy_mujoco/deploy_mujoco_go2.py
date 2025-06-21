@@ -1,4 +1,5 @@
 import time
+import os
 
 import mujoco.viewer
 import mujoco
@@ -148,9 +149,6 @@ if __name__ == "__main__":
                 action = policy(obs_tensor).detach().numpy().squeeze()
                 # transform action to target_dof_pos
                 target_dof_pos = action * action_scale + default_angles
-                print("---")
-                print(default_angles)
-                print(target_dof_pos)
 
             # Pick up changes to the physics state, apply perturbations, update options from GUI.
             viewer.sync()
