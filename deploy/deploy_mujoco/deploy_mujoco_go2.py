@@ -8,6 +8,8 @@ from legged_gym import LEGGED_GYM_ROOT_DIR
 import torch
 import yaml
 
+from pynput import keyboard
+
 
 def get_gravity_orientation(quaternion):
     qw = quaternion[0]
@@ -37,6 +39,31 @@ def pd_control(target_q, q, kp, target_dq, dq, kd):
     """
     """Calculates torques from position commands"""
     return (target_q - q) * kp + (target_dq - dq) * kd
+
+
+def key_callback(key):
+    try:
+        if key.char == '6':
+            cmd[0] += 0.5
+        elif key.char == '7':
+            cmd[0] -= 0.5
+        elif key.char == '8':
+            cmd[1] += 0.5
+        elif key.char == '9':
+            cmd[1] -= 0.5
+        elif key.char == '-':
+            cmd[2] += 0.5
+        elif key.char == '=':
+            cmd[2] -= 0.5
+        elif key.char == '0':
+            cmd[0] = 0
+            cmd[1] = 0
+            cmd[2] = 0
+    except AttributeError:
+        pass
+
+listener = keyboard.Listener(on_press=key_callback)
+listener.start()
 
 
 if __name__ == "__main__":
