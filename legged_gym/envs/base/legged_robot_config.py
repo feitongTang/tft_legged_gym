@@ -41,7 +41,7 @@ class LeggedRobotCfg(BaseConfig):
         episode_length_s = 20 # episode length in seconds
 
     class terrain:
-        mesh_type = 'plane' # "heightfield" # none, plane, heightfield or trimesh
+        mesh_type = 'trimesh' # "heightfield" # none, plane, heightfield or trimesh
         horizontal_scale = 0.1 # [m]
         vertical_scale = 0.005 # [m]
         border_size = 25 # [m]
@@ -71,11 +71,76 @@ class LeggedRobotCfg(BaseConfig):
         num_commands = 4 # default: lin_vel_x, lin_vel_y, ang_vel_yaw, heading (in heading mode ang_vel_yaw is recomputed from heading error)
         resampling_time = 10. # time before command are changed[s]
         heading_command = True # if true: compute ang vel command from heading error
+        curriculum_type = "RewardThresholdCurriculum"
+        lipschitz_threshold = 0.9
+
+        curriculum_seed = 207
+
+        exclusive_phase_offset = True
+        binary_phases = False
+        pacing_offset = False
+        balance_gait_distribution = True
+        gaitwise_curricula = True
+
         class ranges:
             lin_vel_x = [-1.0, 1.0] # min max [m/s]
             lin_vel_y = [-1.0, 1.0]   # min max [m/s]
             ang_vel_yaw = [-1, 1]    # min max [rad/s]
+            body_height_cmd = [-0.05, 0.05]
             heading = [-3.14, 3.14]
+            limit_vel_x = [-10.0, 10.0]
+            limit_vel_y = [-0.6, 0.6]
+            limit_vel_yaw = [-10.0, 10.0]
+            limit_body_height = [-0.05, 0.05]
+            limit_gait_phase = [0, 0.01]
+            limit_gait_offset = [0, 0.01]
+            limit_gait_bound = [0, 0.01]
+            limit_gait_frequency = [2.0, 2.01]
+            limit_gait_duration = [0.49, 0.5]
+            limit_footswing_height = [0.06, 0.061]
+            limit_body_pitch = [0.0, 0.01]
+            limit_body_roll = [0.0, 0.01]
+            limit_aux_reward_coef = [0.0, 0.01]
+            limit_compliance = [0.0, 0.01]
+            limit_stance_width = [0.0, 0.01]
+            limit_stance_length = [0.0, 0.01]
+            gait_phase_cmd_range = [0.0, 0.01]
+            gait_offset_cmd_range = [0.0, 0.01]
+            gait_bound_cmd_range = [0.0, 0.01]
+            gait_frequency_cmd_range = [2.0, 2.01]
+            gait_duration_cmd_range = [0.49, 0.5]
+            footswing_height_range = [0.06, 0.061]
+            body_pitch_range = [0.0, 0.01]
+            body_roll_range = [0.0, 0.01]
+            aux_reward_coef_range = [0.0, 0.01]
+            compliance_range = [0.0, 0.01]
+            stance_width_range = [0.0, 0.01]
+            stance_length_range = [0.0, 0.01]
+        
+        class bin_nums:
+            num_bins_vel_x = 25
+            num_bins_vel_y = 3
+            num_bins_vel_yaw = 25
+            num_bins_body_height = 1
+            num_bins_gait_frequency = 11
+            num_bins_gait_phase = 11
+            num_bins_gait_offset = 2
+            num_bins_gait_bound = 2
+            num_bins_gait_duration = 3
+            num_bins_footswing_height = 1
+            num_bins_body_pitch = 1
+            num_bins_body_roll = 1
+            num_bins_aux_reward_coef = 1
+            num_bins_compliance = 1
+            num_bins_compliance = 1
+            num_bins_stance_width = 1
+            num_bins_stance_length = 1
+
+    class curriculum_thresholds:
+        tracking_lin_vel = 0.8  # closer to 1 is tighter
+        tracking_ang_vel = 0.5
+        tracking_contacts_shaped_force = 0.8  # closer to 1 is tighter
+        tracking_contacts_shaped_vel = 0.8
 
     class init_state:
         pos = [0.0, 0.0, 1.] # x,y,z [m]
@@ -121,8 +186,10 @@ class LeggedRobotCfg(BaseConfig):
     class domain_rand:
         randomize_friction = True
         friction_range = [0.5, 1.25]
+
         randomize_base_mass = False
         added_mass_range = [-1., 1.]
+
         push_robots = True
         push_interval_s = 15
         max_push_vel_xy = 1.
@@ -144,6 +211,26 @@ class LeggedRobotCfg(BaseConfig):
             feet_stumble = -0.0 
             action_rate = -0.01
             stand_still = -0.
+            tracking_lin_vel_lat = 0.
+            tracking_lin_vel_long = 0.
+            tracking_contacts = 0.
+            tracking_contacts_shaped = 0.
+            tracking_contacts_shaped_force = 0.
+            tracking_contacts_shaped_vel = 0.
+            jump = 0.0
+            energy = 0.0
+            energy_expenditure = 0.0
+            survival = 0.0
+            dof_pos_limits = 0.0
+            feet_contact_forces = 0.
+            feet_slip = 0.
+            feet_clearance_cmd_linear = 0.
+            dof_pos = 0.
+            action_smoothness_1 = 0.
+            action_smoothness_2 = 0.
+            base_motion = 0.
+            feet_impact_vel = 0.0
+            raibert_heuristic = 0.0
 
         only_positive_rewards = True # if true negative total rewards are clipped at zero (avoids early termination problems)
         tracking_sigma = 0.25 # tracking reward = exp(-error^2/sigma)

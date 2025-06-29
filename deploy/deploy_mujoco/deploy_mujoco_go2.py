@@ -43,19 +43,19 @@ def pd_control(target_q, q, kp, target_dq, dq, kd):
 
 def key_callback(key):
     try:
-        if key.char == '6':
+        if key.name == 'up':
             cmd[0] += 0.5
-        elif key.char == '7':
+        elif key.name == 'down':
             cmd[0] -= 0.5
-        elif key.char == '8':
+        elif key.name == 'left':
             cmd[1] += 0.5
-        elif key.char == '9':
+        elif key.name == 'right':
             cmd[1] -= 0.5
-        elif key.char == '-':
+        elif key.char == 'q':
             cmd[2] += 0.5
-        elif key.char == '=':
+        elif key.char == 'e':
             cmd[2] -= 0.5
-        elif key.char == '0':
+        elif key.char == 'r':
             cmd[0] = 0
             cmd[1] = 0
             cmd[2] = 0
@@ -119,17 +119,17 @@ if __name__ == "__main__":
         start = time.time()
         while viewer.is_running() and time.time() - start < simulation_duration:
             step_start = time.time()
-            if time.time() - start < 10:
-                tau = pd_control(default_angles, d.qpos[7:], kps, np.zeros_like(kds), d.qvel[6:], kds)
-                d.ctrl[:] = tau
-            if time.time() - start > 10:
-                tau = pd_control(target_dof_pos, d.qpos[7:], kps, np.zeros_like(kds), d.qvel[6:], kds)
-                d.ctrl[:] = tau
-            # # 计算PD控制力矩
-            # tau = pd_control(target_dof_pos, d.qpos[7:], kps, np.zeros_like(kds), d.qvel[6:], kds)
+            # if time.time() - start < 10:
+            #     tau = pd_control(default_angles, d.qpos[7:], kps, np.zeros_like(kds), d.qvel[6:], kds)
+            #     d.ctrl[:] = tau
+            # if time.time() - start > 10:
+            #     tau = pd_control(target_dof_pos, d.qpos[7:], kps, np.zeros_like(kds), d.qvel[6:], kds)
+            #     d.ctrl[:] = tau
+            # 计算PD控制力矩
+            tau = pd_control(target_dof_pos, d.qpos[7:], kps, np.zeros_like(kds), d.qvel[6:], kds)
             
-            # # 应用控制并推进物理仿真
-            # d.ctrl[:] = tau
+            # 应用控制并推进物理仿真
+            d.ctrl[:] = tau
             # mj_step can be replaced with code that also evaluates
             # a policy and applies a control signal before stepping the physics.
             mujoco.mj_step(m, d)
